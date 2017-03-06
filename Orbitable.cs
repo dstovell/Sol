@@ -51,7 +51,7 @@ namespace Sol
 
 		public long GetTime()
 		{
-			return DateTime.Now.DateToUnix();
+			return Sol.Time.GetTime();
 		}
 
 		public abstract double GetScale();

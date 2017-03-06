@@ -15,28 +15,29 @@ namespace Sol
 
 		public static float TwoPI = 2.0f * Mathf.PI;
 
-		public static float GetOrbitAngleAtTime(float SemiMajorAxis, float Eccentricity, float Inclination, float InitialAngle, OrbitType type, long time, long orbitTime)
+		public static float GetOrbitAngleAtTime(Orbiter orbiter, long time)
 		{
 			float angle = 0f;
+			long orbitTime = orbiter.GetOrbitTime();
 
-			if (type == OrbitType.Circular)
+			if (orbiter.Orbit == OrbitType.Circular)
 			{
 				long remainder = time % orbitTime;
 				float angleDelta = ((float)remainder / (float)orbitTime) * TwoPI;
 
-				angle = InitialAngle + angleDelta;
+				angle = orbiter.InitialAngle + angleDelta;
 			}
 
 			return angle;
 		}
 
-		public static Vector3 GetOrbitPositionAtTime(float SemiMajorAxis, float Eccentricity, float Inclination, float InitialAngle, OrbitType type, Vector3 targetPosition, long time, long orbitTime, float scaler = 1f)
+		public static Vector3 GetOrbitPositionAtTime(Orbiter orbiter, long time)
 		{
-			float angle = GetOrbitAngleAtTime(SemiMajorAxis, Eccentricity, Inclination, InitialAngle, type, time, orbitTime);
+			float angle = GetOrbitAngleAtTime(orbiter, time);
 
-			if (type == OrbitType.Circular)
+			if (orbiter.Orbit == OrbitType.Circular)
 			{
-				float orbitalRadius = SemiMajorAxis * scaler;
+				float orbitalRadius = orbiter.SemiMajorAxis * (float)orbiter.GetOrbitalScale();
 
 				float x = orbitalRadius * Mathf.Cos(angle);
 				float z = orbitalRadius * Mathf.Sin(angle);
@@ -46,18 +47,19 @@ namespace Sol
 			return Vector3.zero;
 		}
 
-		public static List<Vector3> GetOrbitalPath(float SemiMajorAxis, float Eccentricity, float Inclination, OrbitType type, int segmentCount, float scaler = 1f)
+		public static List<Vector3> GetOrbitalPath(Orbiter orbiter, int segmentCount)
 		{
 			List<Vector3> points = new List<Vector3>();
 
-			if (type == OrbitType.Circular)
+			if (orbiter.Orbit == OrbitType.Circular)
 			{
 				float deltaAngle = TwoPI / (float)segmentCount;
 				Vector3 firstPoint = Vector3.zero;
+				float scaler = (float)orbiter.GetOrbitalScale();
 				for (float angle=0; angle<TwoPI; angle+=deltaAngle)
 				{
-					float x = SemiMajorAxis * Mathf.Cos(angle) * scaler;
-					float z = SemiMajorAxis * Mathf.Sin(angle) * scaler;
+					float x = orbiter.SemiMajorAxis * Mathf.Cos(angle) * scaler;
+					float z = orbiter.SemiMajorAxis * Mathf.Sin(angle) * scaler;
 
 					Vector3 point = new Vector3(x, 0.0f, z);
 					points.Add(point);
@@ -75,6 +77,19 @@ namespace Sol
 			}
 
 			return points;
+		}
+
+		public static float GetRotateAngleAtTime(Orbiter orbiter, long time)
+		{
+			long rotateTime = orbiter.GetRotateTime();
+			if (rotateTime == 0)
+			{
+				return 0f;
+			}
+
+			long remainder = time % rotateTime;
+			float angle = ((float)remainder / (float)rotateTime) * TwoPI;
+			return angle;
 		}
 	}
 
