@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Vectrosity;
 
 namespace Sol
 {
@@ -15,6 +17,8 @@ namespace Sol
 		public float OrbitTime;
 		public float InitialAngle;
 
+		private VectorLine OrbitalLine;
+
 		void Start() 
 		{
 			//DateTime.Now.DateToUnix();
@@ -25,6 +29,8 @@ namespace Sol
 					this.transform.SetParent(this.OrbiterTarget.transform);
 				}
 			}
+
+			RenderOrbit();
 		}
 		
 		protected void Update() 
@@ -40,26 +46,33 @@ namespace Sol
 
 		public float GetOrbitAngleAtTime(long time)
 		{
-			long orbitTime = GetOrbitTime();
-			long remainder = time % orbitTime;
-			float angleDelta = ((float)remainder / (float)orbitTime) * 2.0f * Mathf.PI;
-
-			return this.InitialAngle + angleDelta;
+			return OrbitalMechanics.GetOrbitAngleAtTime(	this.SemiMajorAxis, this.Eccentricity, this.Inclination, this.InitialAngle, 
+															OrbitalMechanics.OrbitType.Circular, time, this.GetOrbitTime());
 		}
 
 		public Vector3 GetOrbitPositionAtTime(long time)
 		{
-			float orbitalRadius = this.SemiMajorAxis * (float)this.GetOrbitalScale();
-			float angle = this.GetOrbitAngleAtTime(time);
+			return OrbitalMechanics.GetOrbitPositionAtTime(	this.SemiMajorAxis, this.Eccentricity, this.Inclination, this.InitialAngle, 
+															OrbitalMechanics.OrbitType.Circular, this.GetOrbitTargetPosition(), 
+															time, this.GetOrbitTime(), (float)this.GetOrbitalScale());
+		}
 
-			float x = orbitalRadius * Mathf.Cos(angle);
-			float z = orbitalRadius * Mathf.Sin(angle);
-			return new Vector3(x, 0f, z);
+		public Vector3 GetOrbitTargetPosition()
+		{
+			return (this.OrbiterTarget != null) ? this.OrbiterTarget.transform.position : Vector3.zero;
 		}
 
 		public Vector3 GetOrbitPosition()
 		{
 			return this.GetOrbitPositionAtTime( GetTime() );
+		}
+
+		public void RenderOrbit()
+		{
+			float lineWidth = 2.0f;
+			List<Vector3> points = OrbitalMechanics.GetOrbitalPath(this.SemiMajorAxis, this.Eccentricity, this.Inclination, OrbitalMechanics.OrbitType.Circular, 100, (float)ScaleManager.Instance.AuToUnits);
+			this.OrbitalLine = new VectorLine("Orbit_"+this.Id, points, lineWidth, LineType.Continuous, Joins.Weld); 
+			this.OrbitalLine.Draw3DAuto();
 		}
 
 		public abstract double GetOrbitalScale();
