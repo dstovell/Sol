@@ -11,7 +11,7 @@ namespace Sol
 	{
 		public Orbitable OrbiterTarget;
 
-		public OrbitalMechanics.OrbitType Orbit = OrbitalMechanics.OrbitType.Circular;
+		public Sol.Math.OrbitType Orbit = Sol.Math.OrbitType.Circular;
 
 		public float SemiMajorAxis;
 		public float Eccentricity;
@@ -48,12 +48,12 @@ namespace Sol
 
 		public float GetOrbitAngleAtTime(long time)
 		{
-			return OrbitalMechanics.GetOrbitAngleAtTime(this, time);
+			return Sol.Math.GetOrbitAngleAtTime(this, time);
 		}
 
 		public Vector3 GetOrbitPositionAtTime(long time)
 		{
-			return OrbitalMechanics.GetOrbitPositionAtTime(this, time);
+			return Sol.Math.GetOrbitPositionAtTime(this, time);
 		}
 
 		public Vector3 GetOrbitTargetPosition()
@@ -69,7 +69,7 @@ namespace Sol
 		public void RenderOrbit()
 		{
 			float lineWidth = 2.0f;
-			List<Vector3> points = OrbitalMechanics.GetOrbitalPath(this, 100);
+			List<Vector3> points = Sol.Math.GetOrbitalPath(this, 100);
 			this.OrbitalLine = new VectorLine("Orbit_"+this.Id, points, lineWidth, LineType.Continuous, Joins.Weld); 
 			this.OrbitalLine.Draw3DAuto();
 		}

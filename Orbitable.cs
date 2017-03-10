@@ -33,15 +33,7 @@ namespace Sol
 
 		public float GetRotateAngleAtTime(long time)
 		{
-			long rotateTime = GetRotateTime();
-			if (rotateTime == 0)
-			{
-				return 0f;
-			}
-
-			long remainder = time % rotateTime;
-			float angle = ((float)remainder / (float)rotateTime) * 2.0f * Mathf.PI;
-			return angle;
+			return Sol.Math.GetRotateAngleAtTime(this, time);
 		}
 
 		public float GetRotateAngle()

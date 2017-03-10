@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Sol
 {
 
-	public static class OrbitalMechanics
+	public static class Math
 	{
 		public enum OrbitType
 		{
@@ -14,6 +14,7 @@ namespace Sol
 		}
 
 		public static float TwoPI = 2.0f * Mathf.PI;
+		public static double OneG = 9.8f;
 
 		public static float GetOrbitAngleAtTime(Orbiter orbiter, long time)
 		{
@@ -79,7 +80,7 @@ namespace Sol
 			return points;
 		}
 
-		public static float GetRotateAngleAtTime(Orbiter orbiter, long time)
+		public static float GetRotateAngleAtTime(Orbitable orbiter, long time)
 		{
 			long rotateTime = orbiter.GetRotateTime();
 			if (rotateTime == 0)
@@ -91,6 +92,41 @@ namespace Sol
 			float angle = ((float)remainder / (float)rotateTime) * TwoPI;
 			return angle;
 		}
+
+		public static double AccelerationToGs(double acceleration)
+		{
+			return (acceleration / OneG);
+		}
+
+		public static double GsToAcceleration(double gs)
+		{
+			return (gs * OneG);
+		}
+
+		public static double GetLinearTravelTime(double velocityInitial, double acceleration, double distance )
+		{
+			double firstPart = (-1 * velocityInitial);
+			double secondPart = System.Math.Sqrt(velocityInitial*velocityInitial + 2*acceleration*distance) / acceleration;
+
+			double solutionA = firstPart + secondPart;
+			double solutionB = firstPart - secondPart;
+
+			return (solutionA > solutionB) ? solutionA : solutionB;
+		}
+
+		public static double GetLinearCourseTime(double velocityInitialFinal, double acceleration, double distance )
+		{
+			double halfDistance = distance / 2;
+
+			double accelerationTime = GetLinearTravelTime(velocityInitialFinal, acceleration, halfDistance);
+			double decelerationTime = accelerationTime;
+
+			return (acceleration + decelerationTime);
+		}
+
+		//public static double GetLinearCourseTime(double velocityInitial, double velocityFinal, double acceleration, double distance )
+		//{
+		//}
 	}
 
 }
