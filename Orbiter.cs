@@ -23,15 +23,6 @@ namespace Sol
 
 		void Start() 
 		{
-			//DateTime.Now.DateToUnix();
-			if (this.OrbiterTarget != null)
-			{
-				if (this.transform.parent != this.OrbiterTarget.transform)
-				{
-					this.transform.SetParent(this.OrbiterTarget.transform);
-				}
-			}
-
 			RenderOrbit();
 		}
 		
@@ -53,7 +44,12 @@ namespace Sol
 
 		public Vector3 GetOrbitPositionAtTime(long time)
 		{
-			return Sol.Math.GetOrbitPositionAtTime(this, time);
+			return Sol.Math.GetOrbitPositionAtTime(this, time, this.GetOrbitalScale());
+		}
+
+		public Vector3 GetOrbitPositionAtTimeUnscaled(long time)
+		{
+			return Sol.Math.GetOrbitPositionAtTime(this, time, 1);
 		}
 
 		public Vector3 GetOrbitTargetPosition()
@@ -64,6 +60,11 @@ namespace Sol
 		public Vector3 GetOrbitPosition()
 		{
 			return this.GetOrbitPositionAtTime( GetTime() );
+		}
+
+		public Vector3 GetOrbitPositionUnscaled()
+		{
+			return this.GetOrbitPositionAtTimeUnscaled( GetTime() );
 		}
 
 		public void RenderOrbit()

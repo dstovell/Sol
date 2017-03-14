@@ -14,7 +14,9 @@ namespace Sol
 		}
 
 		public static float TwoPI = 2.0f * Mathf.PI;
-		public static double OneG = 9.8f;
+		public static double OneG = 9.8;
+		public static double MetersPerAU = 1.496e+11;
+
 
 		public static float GetOrbitAngleAtTime(Orbiter orbiter, long time)
 		{
@@ -32,13 +34,13 @@ namespace Sol
 			return angle;
 		}
 
-		public static Vector3 GetOrbitPositionAtTime(Orbiter orbiter, long time)
+		public static Vector3 GetOrbitPositionAtTime(Orbiter orbiter, long time, double scale)
 		{
 			float angle = GetOrbitAngleAtTime(orbiter, time);
 
 			if (orbiter.Orbit == OrbitType.Circular)
 			{
-				float orbitalRadius = orbiter.SemiMajorAxis * (float)orbiter.GetOrbitalScale();
+				float orbitalRadius = orbiter.SemiMajorAxis * (float)scale;
 
 				float x = orbitalRadius * Mathf.Cos(angle);
 				float z = orbitalRadius * Mathf.Sin(angle);
